@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="show_keyboard_button">Show keyboard</string>
+    <string name="title_checkbox_show_keyboard_button">Show keyboard button</string>
+    <string name="summary_checkbox_show_keyboard_button">Show a floating button during streaming that opens the Android keyboard.</string>
     <!-- Shortcut strings -->
     <string name="scut_deleted_pc">PC deleted</string>
     <string name="scut_not_paired">PC not paired</string>

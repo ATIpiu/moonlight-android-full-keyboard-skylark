@@ -243,6 +243,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         streamView.setOnKeyListener(this);
         streamView.setInputCallbacks(this);
 
+        // Keep an always-available keyboard button on top of the stream. Some Android
+        // vendors reserve the three-finger gesture that Moonlight normally uses.
+        View keyboardButton = findViewById(R.id.keyboardButton);
+        keyboardButton.setVisibility(prefConfig.showKeyboardButton ? View.VISIBLE : View.GONE);
+        keyboardButton.setOnClickListener(view -> toggleKeyboard());
+
         // Listen for touch events on the background touch view to enable trackpad mode
         // to work on areas outside of the StreamView itself. We use a separate View
         // for this rather than just handling it at the Activity level, because that
