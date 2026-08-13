@@ -3,8 +3,12 @@ package com.limelight.ui;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 public class StreamView extends SurfaceView {
     private double desiredAspectRatio;
@@ -78,8 +82,34 @@ public class StreamView extends SurfaceView {
         return super.onKeyPreIme(keyCode, event);
     }
 
+    @Override
+    public boolean onCheckIsTextEditor() {
+        return true;
+    }
+
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        outAttrs.inputType = InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+        outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI |
+                EditorInfo.IME_FLAG_NO_FULLSCREEN;
+
+        return new BaseInputConnection(this, false) {
+            @Override
+            public boolean commitText(CharSequence text, int newCursorPosition) {
+                if (inputCallbacks != null && text != null && text.length() > 0) {
+                    inputCallbacks.handleTextInput(text);
+                    return true;
+                }
+                return super.commitText(text, newCursorPosition);
+            }
+        };
+    }
+
     public interface InputCallbacks {
         boolean handleKeyUp(KeyEvent event);
         boolean handleKeyDown(KeyEvent event);
+        void handleTextInput(CharSequence text);
     }
 }

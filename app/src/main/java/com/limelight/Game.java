@@ -1563,6 +1563,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         return true;
     }
 
+    @Override
+    public void handleTextInput(CharSequence text) {
+        conn.sendUtf8Text(text.toString());
+    }
+
     private TouchContext getTouchContext(int actionIndex)
     {
         if (actionIndex < touchContextMap.length) {
@@ -1576,11 +1581,17 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void toggleKeyboard() {
         LimeLog.info("Toggling keyboard overlay");
-        // The floating keyboard button must not remain the focused view. Key events from
-        // the IME are delivered through StreamView, so restore its focus before showing it.
+        // Release pointer capture before opening the IME. On some Android 16 devices, the
+        // first IME window is visible but cannot receive touch while capture is still active.
+        inputCaptureProvider.disableCapture();
+
+        // The floating keyboard button must not remain the focused view. Key events from the
+        // IME are delivered through StreamView, so restore its focus before showing it.
         streamView.requestFocus();
-        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.toggleSoftInput(0, 0);
+        streamView.postDelayed(() -> {
+            InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+        }, 100);
     }
 
     private byte getLiTouchTypeFromEvent(MotionEvent event) {
