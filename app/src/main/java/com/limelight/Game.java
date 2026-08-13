@@ -1576,6 +1576,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void toggleKeyboard() {
         LimeLog.info("Toggling keyboard overlay");
+        // The floating keyboard button must not remain the focused view. Key events from
+        // the IME are delivered through StreamView, so restore its focus before showing it.
+        streamView.requestFocus();
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.toggleSoftInput(0, 0);
     }
